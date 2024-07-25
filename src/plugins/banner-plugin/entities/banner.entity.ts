@@ -1,49 +1,43 @@
-import { Asset, VendureEntity } from "@vendure/core";
+import {
+  Asset,
+  VendureEntity,
+  Translatable,
+  LocaleString,
+  Translation,
+} from "@vendure/core";
 import {
   Column,
   DeepPartial,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { InputType, Field } from "@nestjs/graphql";
+import { BannerTranslations } from "./BannerTranslations.entity";
 
-@InputType()
 @Entity()
-export class Banner extends VendureEntity {
+export class Banner extends VendureEntity implements Translatable {
   constructor(input?: DeepPartial<Banner>) {
     super(input);
   }
-  @PrimaryGeneratedColumn({})
-  @Field()
-  id: number;
 
   @Column()
-  @Field()
-  title: string;
+  position!: number;
 
   @Column()
-  @Field()
-  description: string;
-
-  @Column({ type: "int", unique: true, nullable: true })
-  @Field()
-  position: number;
-
-  @ManyToOne(() => Asset, { eager: true })
-  @JoinColumn()
-  imageAr: number;
-
-  @ManyToOne(() => Asset, { eager: true })
-  @JoinColumn()
-  imageEn: number;
+  page!: number;
 
   @Column({ nullable: true })
-  @Field()
-  urlAr?: string;
+  url: string;
 
-  @Column({ nullable: true })
-  @Field()
-  urlEn?: string;
+  title?: LocaleString;
+
+  image: Asset;
+
+  @OneToMany((type) => BannerTranslations, (translation) => translation.base, {
+    eager: true,
+  })
+  translations: Array<Translation<Banner>>;
 }

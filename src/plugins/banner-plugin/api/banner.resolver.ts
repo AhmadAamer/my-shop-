@@ -9,6 +9,7 @@ import {
 } from "@vendure/core";
 import { BannerService } from "../banner.service";
 import { Banner } from "../entities/banner.entity";
+import { BannerTranslations } from "../entities/BannerTranslations.entity";
 
 @Resolver()
 export class BannerResolver {
@@ -21,13 +22,14 @@ export class BannerResolver {
   async banners(@Ctx() ctx: RequestContext, @Args("page") page: number) {
     return await this.bannerService.getBanners(ctx, page);
   }
+
   @Query()
   async banner(@Args("bannerId") bannerId: number, @Ctx() ctx: RequestContext) {
-    return await this.bannerService.getBanner(bannerId, ctx);
+    return await this.bannerService.getBanner(ctx, bannerId);
   }
 
   @Mutation()
-  async addBanner(@Args("input") input: Banner, @Ctx() ctx: RequestContext) {
+  async addBanner(@Ctx() ctx: RequestContext, @Args("input") input: Banner) {
     return this.bannerService.addBanner({ ...input }, ctx);
   }
 }

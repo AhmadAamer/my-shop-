@@ -1,13 +1,12 @@
 import gql from "graphql-tag";
 
-export const shopApiExtensions = gql`
+export const adminApiExtensions = gql`
   type Banner implements Node {
     id: ID!
     position: Int!
     page: Int!
     title: String
     url: String
-    image: Asset
     translations: [BannerTranslation]!
   }
 
