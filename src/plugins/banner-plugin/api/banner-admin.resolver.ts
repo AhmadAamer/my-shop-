@@ -12,11 +12,8 @@ import { Banner } from "../entities/banner.entity";
 import { BannerTranslations } from "../entities/BannerTranslations.entity";
 
 @Resolver()
-export class BannerResolver {
-  constructor(
-    private bannerService: BannerService,
-    private assetService: AssetService
-  ) {}
+export class BannerAdminResolver {
+  constructor(private bannerService: BannerService) {}
 
   @Query()
   async banners(@Ctx() ctx: RequestContext, @Args("page") page: number) {
@@ -28,8 +25,18 @@ export class BannerResolver {
     return await this.bannerService.getBanner(ctx, bannerId);
   }
 
+  @Allow(Permission.SuperAdmin)
   @Mutation()
   async addBanner(@Ctx() ctx: RequestContext, @Args("input") input: Banner) {
     return this.bannerService.addBanner({ ...input }, ctx);
+  }
+
+  @Mutation()
+  async updateBanner(
+    @Ctx() ctx: RequestContext,
+    @Args("id") id: number,
+    @Args("updateInput") updateInput: Banner
+  ) {
+    return this.bannerService.updateBanner(ctx, id, updateInput);
   }
 }

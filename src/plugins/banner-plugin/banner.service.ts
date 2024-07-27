@@ -2,27 +2,18 @@ import { Injectable } from "@nestjs/common";
 import { Banner } from "./entities/banner.entity";
 import {
   assertFound,
-  AssetService,
-  ChannelService,
-  CustomFieldRelationService,
-  ID,
   RequestContext,
   TransactionalConnection,
   TranslatableSaver,
-  Translated,
   TranslatorService,
 } from "@vendure/core";
 import { BannerTranslations } from "./entities/BannerTranslations.entity";
-import { BulkOperationBase } from "typeorm";
 @Injectable()
 export class BannerService {
   constructor(
     private connection: TransactionalConnection,
     private translatableSaver: TranslatableSaver,
-    private translator: TranslatorService,
-    private channelService: ChannelService,
-    private customFieldRelationService: CustomFieldRelationService,
-    private assetService: AssetService
+    private translator: TranslatorService
   ) {}
 
   async getBanners(ctx: RequestContext, page: number) {
@@ -31,8 +22,6 @@ export class BannerService {
       const banners = await this.connection
         .getRepository(ctx, Banner)
         .find({ skip: skip, take: 12 });
-
-      console.log(banners);
 
       return banners.map((banner) => this.translator.translate(banner, ctx));
     } catch (error) {
@@ -62,7 +51,7 @@ export class BannerService {
       if (banner?.position === bannerInput.position)
         throw Error("there is a banner in the same position in this page ");
     });
-    console.log(bannerInput);
+
     const addedBanner = await this.translatableSaver.create({
       ctx,
       input: bannerInput,
@@ -76,8 +65,59 @@ export class BannerService {
     const bannerWithAsset = await assertFound(
       this.getBanner(ctx, +addedBanner.id)
     );
-    console.log(bannerWithAsset);
 
     return this.translator.translate(bannerWithAsset, ctx);
+  }
+
+  async updateBanner(
+    ctx: RequestContext,
+    bannerId: number,
+    updateBannerInput: Partial<Banner>
+  ) {
+    const banner = await this.connection
+      .getRepository(ctx, Banner)
+      .findOne({ where: { id: bannerId } });
+
+    if (!banner) throw new Error("Not found");
+
+    if (updateBannerInput.position && updateBannerInput.page) {
+      console.log("here");
+
+      const exist = await this.connection.getRepository(ctx, Banner).findOne({
+        where: {
+          page: updateBannerInput.page,
+          position: updateBannerInput.position,
+        },
+      });
+      console.log(exist);
+
+      if (exist) {
+        console.log(exist);
+        return new Error(
+          "there is a banner in the same position in this page "
+        );
+      }
+    } else if (updateBannerInput.position && !updateBannerInput.page) {
+      const updatedKey = updateBannerInput.page ? "page" : "position";
+      const bannerKey = updatedKey === "page" ? "position" : "page";
+      const exist = await this.connection.getRepository(ctx, Banner).findOne({
+        where: {
+          [updatedKey]: updateBannerInput[updatedKey],
+          [bannerKey]: banner[bannerKey],
+        },
+      });
+      if (exist) console.log(exist);
+      return new Error("there is a banner in the same position in this page ");
+    }
+
+    await this.connection
+      .getRepository(ctx, Banner)
+      .update(bannerId, updateBannerInput);
+
+    const updated = await this.connection
+      .getRepository(ctx, Banner)
+      .findOne({ where: { id: bannerId } });
+
+    return updated;
   }
 }

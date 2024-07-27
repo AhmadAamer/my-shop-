@@ -1,12 +1,13 @@
 import gql from "graphql-tag";
 
-export const adminApiExtensions = gql`
+export const shopApiExtensions = gql`
   type Banner implements Node {
     id: ID!
     position: Int!
     page: Int!
     title: String
     url: String
+    image: Asset
     translations: [BannerTranslation]!
   }
 
@@ -34,9 +35,5 @@ export const adminApiExtensions = gql`
   extend type Query {
     banners(page: Int!): [Banner!]!
     banner(bannerId: ID!): Banner!
-  }
-
-  extend type Mutation {
-    addBanner(input: BannerInput!): Banner!
   }
 `;
