@@ -8,6 +8,8 @@ import {
   TranslatorService,
 } from "@vendure/core";
 import { BannerTranslations } from "./entities/BannerTranslations.entity";
+import { getRepository } from "./helpers";
+
 @Injectable()
 export class BannerService {
   constructor(
