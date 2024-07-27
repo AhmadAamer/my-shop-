@@ -6,6 +6,7 @@ import { BannerShopResolver } from "./api/resolvers/banner-shop.resolver";
 import { shopApiExtensions } from "./api/extensions/api-extensions";
 import { BannerTranslations } from "./entities/BannerTranslations.entity";
 import { adminApiExtensions } from "./api/extensions/admin-extensions";
+import { BannerPermission } from "./constants";
 @VendurePlugin({
   imports: [PluginCommonModule],
   entities: [Banner, BannerTranslations],
@@ -18,6 +19,7 @@ import { adminApiExtensions } from "./api/extensions/admin-extensions";
       entity: BannerTranslations,
       internal: true,
     });
+    config.authOptions.customPermissions.push(BannerPermission);
     return config;
   },
   shopApiExtensions: {

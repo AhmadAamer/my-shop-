@@ -10,6 +10,7 @@ import {
 import { BannerService } from "../banner.service";
 import { Banner } from "../entities/banner.entity";
 import { BannerTranslations } from "../entities/BannerTranslations.entity";
+import { BannerPermission } from "../constants";
 
 @Resolver()
 export class BannerAdminResolver {
@@ -25,13 +26,14 @@ export class BannerAdminResolver {
     return await this.bannerService.getBanner(ctx, bannerId);
   }
 
-  @Allow(Permission.SuperAdmin)
+  // @Allow(BannerPermission.Create)
   @Mutation()
   async addBanner(@Ctx() ctx: RequestContext, @Args("input") input: Banner) {
     return this.bannerService.addBanner({ ...input }, ctx);
   }
 
   @Mutation()
+  // @Allow(BannerPermission.Update)
   async updateBanner(
     @Ctx() ctx: RequestContext,
     @Args("id") id: number,
