@@ -1,12 +1,5 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import {
-  Allow,
-  AssetService,
-  Ctx,
-  Permission,
-  RequestContext,
-  Transaction,
-} from "@vendure/core";
+import { Allow, Ctx, Permission, RequestContext } from "@vendure/core";
 import { BannerService } from "../banner.service";
 import { Banner } from "../entities/banner.entity";
 import { BannerTranslations } from "../entities/BannerTranslations.entity";

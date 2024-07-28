@@ -8,7 +8,7 @@ import {
   TranslatorService,
 } from "@vendure/core";
 import { BannerTranslations } from "./entities/BannerTranslations.entity";
-import { getRepository } from "./helpers";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class BannerService {
@@ -18,12 +18,14 @@ export class BannerService {
     private translator: TranslatorService
   ) {}
 
+  public getRepo(ctx: RequestContext): Repository<Banner> {
+    return this.connection.getRepository(ctx, Banner);
+  }
+
   async getBanners(ctx: RequestContext, page: number) {
     try {
       const skip = +((page - 1) * 12);
-      const banners = await this.connection
-        .getRepository(ctx, Banner)
-        .find({ skip: skip, take: 12 });
+      const banners = await this.getRepo(ctx).find({ skip: skip, take: 12 });
 
       return banners.map((banner) => this.translator.translate(banner, ctx));
     } catch (error) {
